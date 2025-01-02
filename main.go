@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-song-album/controllers"
+	"go-song-album/routes"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -9,11 +9,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.GET("/albums", controllers.GetAlbums)
-	router.GET("/albums/:id", controllers.GetAlbumByID)
-	router.POST("/albums", controllers.PostAlbums)
-	router.PUT("/albums/:id", controllers.UpdateAlbum)
-	router.DELETE("/albums/:id", controllers.DeleteAlbum)
+	routes.RegisterRoutes(router)
 
 	port := os.Getenv("PORT")
 	if port == "" {

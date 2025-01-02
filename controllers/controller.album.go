@@ -14,24 +14,20 @@ var albums = []models.Album{
 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
-/*
-getAlbums responds with the list of all albums as JSON.
-`getAlbums“ is not exported and make access outside make g capital `GetAlbums`
-GetAlbums handles GET requests to retrieve the list of albums.
-It responds with a JSON-encoded list of albums and an HTTP status code 200 (OK).
-@param c *gin.Context - the context for the current request, provided by the Gin framework.
-*/
+// GetAlbums handles GET requests to retrieve the list of albums.
+// It responds with a JSON-encoded list of albums and an HTTP status code 200 (OK).
+// @param c *gin.Context - the context for the current request, provided by the Gin framework.
 func GetAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
-// postAlbums adds an album from JSON received in the request body.
+// PostAlbums adds an album from JSON received in the request body.
 func PostAlbums(c *gin.Context) {
 	var newAlbum models.Album
 
-	// Call BindJSON to bind the received JSON to
-	// newAlbum.
+	// Call BindJSON to bind the received JSON to newAlbum.
 	if err := c.BindJSON(&newAlbum); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid request"})
 		return
 	}
 
@@ -40,13 +36,12 @@ func PostAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
 
-// getAlbumByID locates the album whose ID value matches the id
-// parameter sent by the client, then returns that album as a response.
+// GetAlbumByID locates the album whose ID value matches the id parameter sent by the client,
+// then returns that album as a response.
 func GetAlbumByID(c *gin.Context) {
 	id := c.Param("id")
 
-	// Loop through the list of albums, looking for
-	// an album whose ID value matches the parameter.
+	// Loop through the list of albums, looking for an album whose ID value matches the parameter.
 	for _, a := range albums {
 		if a.ID == id {
 			c.IndentedJSON(http.StatusOK, a)
@@ -56,12 +51,13 @@ func GetAlbumByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
-// Implement Update and Delete handlers
+// UpdateAlbum updates an existing album with the provided ID.
 func UpdateAlbum(c *gin.Context) {
 	id := c.Param("id")
 
 	var updatedAlbum models.Album
 	if err := c.BindJSON(&updatedAlbum); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid request"})
 		return
 	}
 
@@ -75,6 +71,7 @@ func UpdateAlbum(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
+// DeleteAlbum deletes an album with the provided ID.
 func DeleteAlbum(c *gin.Context) {
 	id := c.Param("id")
 
