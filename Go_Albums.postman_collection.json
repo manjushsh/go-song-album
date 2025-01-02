@@ -1,0 +1,437 @@
+{
+	"info": {
+		"_postman_id": "1ada22d8-e022-4cc5-b9a2-4441d2bd5f57",
+		"name": "Go",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31349721"
+	},
+	"item": [
+		{
+			"name": "Health Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Health",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ALBUMS_BASE_URL}}/",
+							"host": [
+								"{{ALBUMS_BASE_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 02 Jan 2025 09:41:57 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "21"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Welcome\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Create a Album Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"{{$randomUUID}}\",\n    \"title\": \"{{$randomCatchPhrase}}\",\n    \"artist\": \"{{$randomFullName}}\",\n    \"price\": {{$randomPrice}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/albums",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						"albums"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create a Album",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{$randomUUID}}\",\n    \"title\": \"{{$randomCatchPhrase}}\",\n    \"artist\": \"{{$randomFullName}}\",\n    \"price\": {{$randomPrice}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ALBUMS_BASE_URL}}/albums",
+							"host": [
+								"{{ALBUMS_BASE_URL}}"
+							],
+							"path": [
+								"albums"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 02 Jan 2025 09:54:36 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "154"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"65b1793a-6fbb-4702-aa21-1885b0c9d196\",\n    \"title\": \"Exclusive user-facing secured line\",\n    \"artist\": \"Bobbie Bruen\",\n    \"price\": 416.86\n}"
+				}
+			]
+		},
+		{
+			"name": "Get all Albums Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/albums",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						"albums"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get all Albums",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ALBUMS_BASE_URL}}/albums",
+							"host": [
+								"{{ALBUMS_BASE_URL}}"
+							],
+							"path": [
+								"albums"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 02 Jan 2025 09:55:34 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "562"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": \"1\",\n        \"title\": \"Blue Train\",\n        \"artist\": \"John Coltrane\",\n        \"price\": 56.99\n    },\n    {\n        \"id\": \"2\",\n        \"title\": \"Jeru\",\n        \"artist\": \"Gerry Mulligan\",\n        \"price\": 17.99\n    },\n    {\n        \"id\": \"3\",\n        \"title\": \"Sarah Vaughan and Clifford Brown\",\n        \"artist\": \"Sarah Vaughan\",\n        \"price\": 39.99\n    },\n    {\n        \"id\": \"65b1793a-6fbb-4702-aa21-1885b0c9d196\",\n        \"title\": \"Exclusive user-facing secured line\",\n        \"artist\": \"Bobbie Bruen\",\n        \"price\": 416.86\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get specific Album Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/albums/2",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						"albums",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get specific Album",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ALBUMS_BASE_URL}}/albums/2",
+							"host": [
+								"{{ALBUMS_BASE_URL}}"
+							],
+							"path": [
+								"albums",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 02 Jan 2025 10:03:22 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "90"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"2\",\n    \"title\": \"Jeru\",\n    \"artist\": \"Gerry Mulligan\",\n    \"price\": 17.99\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Albums Copy",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"2\",\n    \"title\": \"{{$randomCatchPhrase}}\",\n    \"artist\": \"{{$randomFullName}}\",\n    \"price\": {{$randomPrice}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/albums/2",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						"albums",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Update albums",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"2\",\n    \"title\": \"{{$randomCatchPhrase}}\",\n    \"artist\": \"{{$randomFullName}}\",\n    \"price\": {{$randomPrice}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ALBUMS_BASE_URL}}/albums/2",
+							"host": [
+								"{{ALBUMS_BASE_URL}}"
+							],
+							"path": [
+								"albums",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 02 Jan 2025 10:11:13 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "126"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"2\",\n    \"title\": \"Cross-group solution-oriented utilisation\",\n    \"artist\": \"Shelly Fahey\",\n    \"price\": 901.56\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete album Copy",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/albums/2",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						"albums",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Delete album",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{ALBUMS_BASE_URL}}/albums/2",
+							"host": [
+								"{{ALBUMS_BASE_URL}}"
+							],
+							"path": [
+								"albums",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 02 Jan 2025 10:13:15 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "34"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"album deleted\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Login Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json()",
+							"pm.collectionVariables.set('AUTH_TOKEN', response.token)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/auth/login",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{$randomUserName}}\",\n    \"password\": \"{{$randomPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ALBUMS_BASE_URL}}/auth/register",
+					"host": [
+						"{{ALBUMS_BASE_URL}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
