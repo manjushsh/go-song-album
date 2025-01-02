@@ -17,8 +17,8 @@ func main() {
 		})
 	})
 
-	routes.RegisterAlbumRoutes(router)
 	routes.RegisterAuthRoutes(router)
+	routes.RegisterAlbumRoutes(router)
 
 	port := os.Getenv("PORT")
 	if port == "" {
