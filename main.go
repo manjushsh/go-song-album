@@ -9,7 +9,16 @@ import (
 
 func main() {
 	router := gin.Default()
-	routes.RegisterRoutes(router)
+
+	// Health API
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Welcome to the Go-Song-Album API!",
+		})
+	})
+
+	routes.RegisterAuthRoutes(router)
+	routes.RegisterAlbumRoutes(router)
 
 	port := os.Getenv("PORT")
 	if port == "" {
