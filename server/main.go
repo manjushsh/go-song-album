@@ -12,10 +12,18 @@ func main() {
 	services.InitEnv()
 	router := gin.Default()
 
+	// Static route to serve HTML, CSS, and JS from client/public
+	router.Static("/home", "../client/public")
+
 	// Health API
 	router.GET("/", func(c *gin.Context) {
+		scheme := "http"
+		if c.Request.TLS != nil {
+			scheme = "https"
+		}
 		c.JSON(200, gin.H{
 			"message": "Welcome to the Go-Song-Album API!",
+			"homeUrl": scheme + ":" + c.Request.Host + "/home",
 		})
 	})
 
