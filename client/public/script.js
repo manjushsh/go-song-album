@@ -1,5 +1,6 @@
 const apiUrl = 'https://go-song-album.onrender.com';
 let authToken = localStorage.getItem('authToken');
+let isLoading = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     if (authToken) fetchAlbums();
@@ -10,10 +11,11 @@ async function login() {
     const password = document.getElementById('password').value;
 
     try {
+        isLoading = true;
         const data = await fetchData(`${apiUrl}/auth/login`, 'POST', { username, password });
         authToken = data.token;
         localStorage.setItem('authToken', authToken);
-        fetchAlbums();
+        fetchAlbums().finally(() => isLoading = false);
     } catch (error) {
         alert(error.message);
     }
@@ -21,7 +23,9 @@ async function login() {
 
 async function fetchAlbums() {
     try {
-        const albums = await fetchData(`${apiUrl}/albums`);
+        isLoading = true;
+        const albums = await fetchData(`${apiUrl}/albums`)
+            .finally(() => isLoading = false);
         renderAlbums(albums);
     } catch (error) {
         alert(error.message);
@@ -51,20 +55,26 @@ async function addAlbum() {
     const album = getAlbumFormData();
 
     try {
+        isLoading = true;
         await fetchData(`${apiUrl}/albums`, 'POST', album);
-        fetchAlbums().then(() => setAlbumFormData({ title: '', artist: '', price: null, image: '' }));
+        fetchAlbums()
+            .then(() => setAlbumFormData({ title: '', artist: '', price: null, image: '' }))
+            .finally(() => isLoading = false);
     } catch (error) {
         alert(error.message);
     }
 }
 
 async function updateAlbum() {
+    isLoading = true;
     const album = getAlbumFormData();
     const id = document.getElementById('albumId').value;
 
     try {
         await fetchData(`${apiUrl}/albums/${id}`, 'PUT', album);
-        fetchAlbums().then(() => setAlbumFormData({ title: '', artist: '', price: null, image: '' }));
+        fetchAlbums()
+            .then(() => setAlbumFormData({ title: '', artist: '', price: null, image: '' }))
+            .finally(() => isLoading = false);
     } catch (error) {
         alert(error.message);
     }
@@ -72,8 +82,9 @@ async function updateAlbum() {
 
 async function deleteAlbum(id) {
     try {
+        isLoading = true;
         await fetchData(`${apiUrl}/albums/${id}`, 'DELETE');
-        fetchAlbums();
+        fetchAlbums().finally(() => isLoading = false);
     } catch (error) {
         alert(error.message);
     }
@@ -81,8 +92,10 @@ async function deleteAlbum(id) {
 
 async function resetAlbums() {
     try {
+        isLoading = true;
         await fetchData(`${apiUrl}/albums/reset`, 'POST');
-        fetchAlbums();
+        fetchAlbums()
+            .finally(() => isLoading = false);
     } catch (error) {
         alert(error.message);
     }
