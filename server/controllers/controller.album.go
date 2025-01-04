@@ -15,7 +15,11 @@ var initialAlbums = []models.Album{
 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99, Image: "https://picsum.photos/300/400?random=" + strconv.Itoa(rand.Int())},
 }
 
-var albums = initialAlbums
+var albums = []models.Album{
+	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99, Image: "https://picsum.photos/300/400?random=" + strconv.Itoa(rand.Int())},
+	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99, Image: "https://picsum.photos/300/400?random=" + strconv.Itoa(rand.Int())},
+	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99, Image: "https://picsum.photos/300/400?random=" + strconv.Itoa(rand.Int())},
+}
 
 // GetAlbums handles GET requests to retrieve the list of albums.
 // It responds with a JSON-encoded list of albums and an HTTP status code 200 (OK).
@@ -90,6 +94,7 @@ func DeleteAlbum(c *gin.Context) {
 
 // ResetAlbums - resets the list of albums to the initial list.
 func ResetAlbums(c *gin.Context) {
-	albums = initialAlbums
+	albums = make([]models.Album, len(initialAlbums))
+	copy(albums, initialAlbums)
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "albums reset"})
 }
