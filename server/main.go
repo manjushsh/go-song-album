@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go-song-album/middlewares"
 	"go-song-album/routes"
 	"go-song-album/services"
 	"os"
@@ -13,6 +14,7 @@ func main() {
 	router := gin.Default()
 
 	// Static route to serve HTML, CSS, and JS from client/public
+	router.Use(middlewares.CORSMiddleware())
 	router.Static("/home", "../client/public")
 
 	// Health API

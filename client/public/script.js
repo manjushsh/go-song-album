@@ -1,4 +1,4 @@
-const apiUrl = 'http://localhost:8080' // 'https://go-song-album.onrender.com';
+const apiUrl = 'https://go-song-album.onrender.com';
 let authToken = localStorage.getItem('authToken');
 
 document.addEventListener('DOMContentLoaded', () => {
