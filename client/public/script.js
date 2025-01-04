@@ -40,7 +40,7 @@ function renderAlbums(albums) {
             </div>
             <div class="album-actions">
                 <button data-id="${album.id}" onclick="editAlbum(this)">Edit</button>
-                <button onclick="deleteAlbum(${album.id})">Delete</button>
+                <button data-id="${album.id}" onclick="deleteAlbum(this)">Delete</button>
             </div>
         </div>
     `).join('');
@@ -70,7 +70,8 @@ async function updateAlbum() {
     }
 }
 
-async function deleteAlbum(id) {
+async function deleteAlbum(button) {
+    const id = button.getAttribute('data-id');
     try {
         await fetchData(`${apiUrl}/albums/${id}`, 'DELETE');
         fetchAlbums();

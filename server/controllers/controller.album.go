@@ -34,7 +34,7 @@ func GetAlbums(c *gin.Context) {
 	}
 	defer mongoInstance.Disconnect()
 
-	filter := bson.M{"isDeleted": bson.M{"$ne": true}}
+	filter := bson.M{"isdeleted": bson.M{"$ne": true}}
 	cursor, err := mongoInstance.FindAll("albums", filter)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to retrieve albums"})
@@ -55,6 +55,7 @@ func GetAlbums(c *gin.Context) {
 func PostAlbums(c *gin.Context) {
 	var newAlbum models.Album
 	newAlbum.ID = GenerateUUID()
+	newAlbum.IsDeleted = false
 
 	if err := c.BindJSON(&newAlbum); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid request"})
@@ -139,7 +140,7 @@ func DeleteAlbum(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	filter := bson.M{"id": id}
-	update := bson.M{"$set": bson.M{"isDeleted": true}}
+	update := bson.M{"$set": bson.M{"isdeleted": true}}
 
 	result, err := mongoInstance.Update("albums", filter, update)
 	if err != nil {

@@ -8,5 +8,5 @@ type Album struct {
 	Artist    string  `json:"artist"`
 	Price     float64 `json:"price"`
 	Image     string  `json:"image"`
-	IsDeleted bool    `json:"isDeleted"`
+	IsDeleted bool    `json:"isdeleted"`
 }
