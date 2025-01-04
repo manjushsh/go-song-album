@@ -44,3 +44,49 @@ func Register(c *gin.Context) {
 	users = append(users, registerRequest)
 	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
 }
+
+// Implement the GetUsers API
+func GetUsers(c *gin.Context) {
+	c.JSON(http.StatusOK, users)
+}
+
+func GetUser(c *gin.Context) {
+	username := c.Param("username")
+	for _, user := range users {
+		if user.Username == username {
+			c.JSON(http.StatusOK, user)
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+}
+
+func UpdateUser(c *gin.Context) {
+	username := c.Param("username")
+	var updatedUser models.Auth
+	if err := c.ShouldBindJSON(&updatedUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	for i, user := range users {
+		if user.Username == username {
+			users[i] = updatedUser
+			c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+}
+
+func DeleteUser(c *gin.Context) {
+	username := c.Param("username")
+	for i, user := range users {
+		if user.Username == username {
+			users = append(users[:i], users[i+1:]...)
+			c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+}

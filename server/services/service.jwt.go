@@ -1,21 +1,24 @@
+// go get github.com/golang-jwt/jwt/v5
 package services
 
 import (
 	"go-song-album/models"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 // Define the JWT secret key
-var jwtSecret = []byte("123456-secret-key")
+var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
+var tokenDuration = 8 * time.Hour
 
 // GenerateJWT generates a new JWT token
 func GenerateJWT(username string) (string, error) {
 	claims := models.Claims{
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // Token expires in 24 hours
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenDuration)), // Token expires in 24 hours
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}

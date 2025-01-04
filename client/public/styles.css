@@ -1,0 +1,116 @@
+:root {
+    --background-color: #f4f4f4;
+    --text-color: #333;
+    --header-background: #333;
+    --header-text-color: #fff;
+    --border-color: #77aaff;
+    --album-background: #fff;
+    --album-border-color: #ccc;
+    --button-background: #333;
+    --button-text-color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #121212;
+        --text-color: #e0e0e0;
+        --header-background: #1f1f1f;
+        --header-text-color: #e0e0e0;
+        --border-color: #3a3a3a;
+        --album-background: #1f1f1f;
+        --album-border-color: #3a3a3a;
+        --button-background: #444;
+        --button-text-color: #e0e0e0;
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+header {
+    background: var(--header-background);
+    color: var(--header-text-color);
+    min-height: 70px;
+    border-bottom: var(--border-color) 3px solid;
+}
+
+header a {
+    color: var(--header-text-color);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+header ul {
+    padding: 0;
+    list-style: none;
+}
+
+header li {
+    float: left;
+    display: inline;
+    padding: 0 20px 0 20px;
+}
+
+.main {
+    padding: 20px;
+    background: var(--album-background);
+    margin-top: 20px;
+}
+
+.album {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px var(--album-border-color) solid;
+}
+
+.album img {
+    width: calc(100px * 0.75);
+    height: calc(100px * 1);
+    border-radius: 8%;
+}
+
+.album-details {
+    flex: 1;
+    margin-left: 20px;
+}
+
+.album-actions button {
+    margin-left: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.form-group button {
+    padding: 10px 15px;
+    background: var(--button-background);
+    color: var(--button-text-color);
+    border: none;
+    cursor: pointer;
+}
