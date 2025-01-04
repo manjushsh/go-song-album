@@ -9,11 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var albums = []models.Album{
+var initialAlbums = []models.Album{
 	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99, Image: "https://picsum.photos/300/400?random=" + strconv.Itoa(rand.Int())},
 	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99, Image: "https://picsum.photos/300/400?random=" + strconv.Itoa(rand.Int())},
 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99, Image: "https://picsum.photos/300/400?random=" + strconv.Itoa(rand.Int())},
 }
+
+var albums = initialAlbums
 
 // GetAlbums handles GET requests to retrieve the list of albums.
 // It responds with a JSON-encoded list of albums and an HTTP status code 200 (OK).
@@ -52,7 +54,7 @@ func GetAlbumByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
-// UpdateAlbum updates an existing album with the provided ID.
+// UpdateAlbum - updates an existing album with the provided ID.
 func UpdateAlbum(c *gin.Context) {
 	id := c.Param("id")
 
@@ -72,7 +74,7 @@ func UpdateAlbum(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
-// DeleteAlbum deletes an album with the provided ID.
+// DeleteAlbum - deletes an album with the provided ID.
 func DeleteAlbum(c *gin.Context) {
 	id := c.Param("id")
 
@@ -84,4 +86,10 @@ func DeleteAlbum(c *gin.Context) {
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
+// ResetAlbums - resets the list of albums to the initial list.
+func ResetAlbums(c *gin.Context) {
+	albums = initialAlbums
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "albums reset"})
 }
