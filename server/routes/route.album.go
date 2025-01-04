@@ -15,4 +15,5 @@ func RegisterAlbumRoutes(r *gin.Engine) {
 	albumGroup.POST("/", controllers.PostAlbums)
 	albumGroup.PUT("/:id", controllers.UpdateAlbum)
 	albumGroup.DELETE("/:id", controllers.DeleteAlbum)
+	albumGroup.POST("/reset", controllers.ResetAlbums)
 }

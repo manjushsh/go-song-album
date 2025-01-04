@@ -79,6 +79,15 @@ async function deleteAlbum(id) {
     }
 }
 
+async function resetAlbums() {
+    try {
+        await fetchData(`${apiUrl}/albums/reset`, 'POST');
+        fetchAlbums();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
 async function editAlbum(button) {
     const id = button.getAttribute('data-id');
     try {
