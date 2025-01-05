@@ -81,7 +81,7 @@ func PostAlbums(c *gin.Context) {
 // GetAlbumByID locates the album whose ID value matches the id parameter sent by the client.
 func GetAlbumByID(c *gin.Context) {
 	id := c.Param("id")
-	// check if ID is valid. saftey check.
+	// check if ID is valid. safety check.
 	if !services.IsValidUUID(id) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
 		return
@@ -94,7 +94,8 @@ func GetAlbumByID(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var album models.Album
-	err := mongoInstance.FindOne("albums", bson.M{"id": id}).Decode(&album)
+	filter := bson.M{"id": id}
+	err := mongoInstance.FindOne("albums", filter).Decode(&album)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 		return
@@ -106,7 +107,7 @@ func GetAlbumByID(c *gin.Context) {
 // UpdateAlbum updates an existing album with the provided ID.
 func UpdateAlbum(c *gin.Context) {
 	id := c.Param("id")
-	// check if ID is valid. saftey check.
+	// check if ID is valid. safety check.
 	if !services.IsValidUUID(id) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
 		return
@@ -144,7 +145,7 @@ func UpdateAlbum(c *gin.Context) {
 // DeleteAlbum marks an album as deleted with the provided ID.
 func DeleteAlbum(c *gin.Context) {
 	id := c.Param("id")
-	// check if ID is valid. saftey check.
+	// check if ID is valid. safety check.
 	if !services.IsValidUUID(id) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
 		return

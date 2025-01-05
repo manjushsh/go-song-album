@@ -29,7 +29,8 @@ func Login(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var foundUser models.Auth
-	err := mongoInstance.FindOne("users", bson.M{"username": loginRequest.Username, "isdeleted": false}).Decode(&foundUser)
+	filter := bson.D{{Key: "username", Value: loginRequest.Username}, {Key: "isdeleted", Value: false}}
+	err := mongoInstance.FindOne("users", filter).Decode(&foundUser)
 	if err != nil {
 		services.HandleError(c, err, http.StatusInternalServerError, "Invalid credentials - No User Found")
 		return
@@ -181,7 +182,8 @@ func DeleteUser(c *gin.Context) {
 	}
 	defer mongoInstance.Disconnect()
 
-	result, err := mongoInstance.Delete("users", bson.M{"username": username})
+	filter := bson.M{"username": username}
+	result, err := mongoInstance.Delete("users", filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
 		return
