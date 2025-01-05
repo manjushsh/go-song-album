@@ -87,7 +87,11 @@ func GetAlbumByID(c *gin.Context) {
 		return
 	}
 
-	sanitizedUUID := services.SanitizeUUID(id)
+	sanitizedUUID, err := services.SanitizeUUID(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 
 	mongoInstance, ok := getMongoService(c)
 	if !ok {
@@ -97,7 +101,7 @@ func GetAlbumByID(c *gin.Context) {
 
 	var album models.Album
 	filter := bson.M{"id": sanitizedUUID}
-	err := mongoInstance.FindOne("albums", filter).Decode(&album)
+	err = mongoInstance.FindOne("albums", filter).Decode(&album)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 		return
@@ -114,7 +118,11 @@ func UpdateAlbum(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
 		return
 	}
-	sanitizedUUID := services.SanitizeUUID(id)
+	sanitizedUUID, err := services.SanitizeUUID(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 
 	var updatedAlbum models.Album
 	if err := c.BindJSON(&updatedAlbum); err != nil {
@@ -153,7 +161,11 @@ func DeleteAlbum(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
 		return
 	}
-	sanitizedUUID := services.SanitizeUUID(id)
+	sanitizedUUID, err := services.SanitizeUUID(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 
 	mongoInstance, ok := getMongoService(c)
 	if !ok {

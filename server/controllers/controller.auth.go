@@ -22,8 +22,16 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	sanitizedUsername := services.SanitizeUsername(loginRequest.Username)
-	sanitizedPassword := services.SanitizePassword(loginRequest.Password)
+	sanitizedUsername, err := services.SanitizeUsername(loginRequest.Username)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid username"})
+		return
+	}
+	sanitizedPassword, err := services.SanitizePassword(loginRequest.Password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
+		return
+	}
 
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
@@ -33,7 +41,7 @@ func Login(c *gin.Context) {
 
 	var foundUser models.Auth
 	filter := bson.M{"username": sanitizedUsername, "isdeleted": false}
-	err := mongoInstance.FindOne("users", filter).Decode(&foundUser)
+	err = mongoInstance.FindOne("users", filter).Decode(&foundUser)
 	if err != nil {
 		services.HandleError(c, err, http.StatusUnauthorized, "Invalid credentials - No User Found")
 		return
@@ -65,8 +73,16 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	sanitizedUsername := services.SanitizeUsername(registerRequest.Username)
-	sanitizedPassword := services.SanitizePassword(registerRequest.Password)
+	sanitizedUsername, err := services.SanitizeUsername(registerRequest.Username)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid username"})
+		return
+	}
+	sanitizedPassword, err := services.SanitizePassword(registerRequest.Password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
+		return
+	}
 
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
@@ -75,7 +91,7 @@ func Register(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var existingUser models.Auth
-	err := mongoInstance.FindOne("users", bson.M{"username": sanitizedUsername}).Decode(&existingUser)
+	err = mongoInstance.FindOne("users", bson.M{"username": sanitizedUsername}).Decode(&existingUser)
 	if err == nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "Username already exists"})
 		return
@@ -125,7 +141,11 @@ func GetUsers(c *gin.Context) {
 
 func GetUser(c *gin.Context) {
 	username := c.Param("username")
-	sanitizedUsername := services.SanitizeUsername(username)
+	sanitizedUsername, err := services.SanitizeUsername(username)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid username"})
+		return
+	}
 
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
@@ -134,7 +154,7 @@ func GetUser(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var user models.Auth
-	err := mongoInstance.FindOne("users", bson.M{"username": sanitizedUsername}).Decode(&user)
+	err = mongoInstance.FindOne("users", bson.M{"username": sanitizedUsername}).Decode(&user)
 	if err != nil {
 		services.HandleError(c, err, http.StatusNotFound, "User not found")
 		return
@@ -157,7 +177,11 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	sanitizedUsername := services.SanitizeUsername(username)
+	sanitizedUsername, err := services.SanitizeUsername(username)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid username"})
+		return
+	}
 
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
@@ -186,7 +210,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	sanitizedUsername := services.SanitizeUsername(username)
+	sanitizedUsername, err := services.SanitizeUsername(username)
 
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {

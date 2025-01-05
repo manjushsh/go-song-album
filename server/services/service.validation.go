@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/google/uuid"
@@ -46,14 +47,23 @@ func IsValidUUID(uuidStr string) bool {
 	return err == nil
 }
 
-func SanitizeUsername(input string) string {
-	return sanitizeUsername.ReplaceAllString(input, "")
+func SanitizeUsername(input string) (string, error) {
+	if !IsValidUsername(input) {
+		return "", fmt.Errorf("invalid username")
+	}
+	return sanitizeUsername.ReplaceAllString(input, ""), nil
 }
 
-func SanitizePassword(password string) string {
-	return password
+func SanitizePassword(password string) (string, error) {
+	if !IsValidPassword(password) {
+		return "", fmt.Errorf("invalid password")
+	}
+	return password, nil
 }
 
-func SanitizeUUID(uuidStr string) string {
-	return sanitizeUUID.ReplaceAllString(uuidStr, "")
+func SanitizeUUID(uuidStr string) (string, error) {
+	if !IsValidUUID(uuidStr) {
+		return "", fmt.Errorf("invalid UUID")
+	}
+	return sanitizeUUID.ReplaceAllString(uuidStr, ""), nil
 }
