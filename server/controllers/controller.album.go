@@ -87,6 +87,8 @@ func GetAlbumByID(c *gin.Context) {
 		return
 	}
 
+	sanitizedUUID := services.SanitizeUUID(id)
+
 	mongoInstance, ok := getMongoService(c)
 	if !ok {
 		return
@@ -94,7 +96,7 @@ func GetAlbumByID(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var album models.Album
-	filter := bson.M{"id": id}
+	filter := bson.M{"id": sanitizedUUID}
 	err := mongoInstance.FindOne("albums", filter).Decode(&album)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
@@ -112,6 +114,7 @@ func UpdateAlbum(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
 		return
 	}
+	sanitizedUUID := services.SanitizeUUID(id)
 
 	var updatedAlbum models.Album
 	if err := c.BindJSON(&updatedAlbum); err != nil {
@@ -125,7 +128,7 @@ func UpdateAlbum(c *gin.Context) {
 	}
 	defer mongoInstance.Disconnect()
 
-	filter := bson.M{"id": id}
+	filter := bson.M{"id": sanitizedUUID}
 	update := bson.M{"$set": updatedAlbum}
 
 	result, err := mongoInstance.Update("albums", filter, update)
@@ -150,6 +153,7 @@ func DeleteAlbum(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
 		return
 	}
+	sanitizedUUID := services.SanitizeUUID(id)
 
 	mongoInstance, ok := getMongoService(c)
 	if !ok {
@@ -157,7 +161,7 @@ func DeleteAlbum(c *gin.Context) {
 	}
 	defer mongoInstance.Disconnect()
 
-	filter := bson.M{"id": id}
+	filter := bson.M{"id": sanitizedUUID}
 	update := bson.M{"$set": bson.M{"isdeleted": true}}
 
 	result, err := mongoInstance.Update("albums", filter, update)

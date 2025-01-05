@@ -22,6 +22,9 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	sanitizedUsername := services.SanitizeUsername(loginRequest.Username)
+	sanitizedPassword := services.SanitizePassword(loginRequest.Password)
+
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
@@ -29,19 +32,19 @@ func Login(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var foundUser models.Auth
-	filter := bson.D{{Key: "username", Value: loginRequest.Username}, {Key: "isdeleted", Value: false}}
+	filter := bson.M{"username": sanitizedUsername, "isdeleted": false}
 	err := mongoInstance.FindOne("users", filter).Decode(&foundUser)
 	if err != nil {
-		services.HandleError(c, err, http.StatusInternalServerError, "Invalid credentials - No User Found")
+		services.HandleError(c, err, http.StatusUnauthorized, "Invalid credentials - No User Found")
 		return
 	}
 
-	if !services.CheckPasswordHash(loginRequest.Password, foundUser.Password) {
+	if !services.CheckPasswordHash(sanitizedPassword, foundUser.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	token, err := services.GenerateJWT(loginRequest.Username)
+	token, err := services.GenerateJWT(sanitizedUsername)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -62,6 +65,9 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	sanitizedUsername := services.SanitizeUsername(registerRequest.Username)
+	sanitizedPassword := services.SanitizePassword(registerRequest.Password)
+
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
@@ -69,7 +75,7 @@ func Register(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var existingUser models.Auth
-	err := mongoInstance.FindOne("users", bson.M{"username": registerRequest.Username}).Decode(&existingUser)
+	err := mongoInstance.FindOne("users", bson.M{"username": sanitizedUsername}).Decode(&existingUser)
 	if err == nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "Username already exists"})
 		return
@@ -78,7 +84,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := services.HashPassword(registerRequest.Password)
+	hashedPassword, err := services.HashPassword(sanitizedPassword)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
@@ -119,6 +125,7 @@ func GetUsers(c *gin.Context) {
 
 func GetUser(c *gin.Context) {
 	username := c.Param("username")
+	sanitizedUsername := services.SanitizeUsername(username)
 
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
@@ -127,7 +134,7 @@ func GetUser(c *gin.Context) {
 	defer mongoInstance.Disconnect()
 
 	var user models.Auth
-	err := mongoInstance.FindOne("users", bson.M{"username": username}).Decode(&user)
+	err := mongoInstance.FindOne("users", bson.M{"username": sanitizedUsername}).Decode(&user)
 	if err != nil {
 		services.HandleError(c, err, http.StatusNotFound, "User not found")
 		return
@@ -138,6 +145,7 @@ func GetUser(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 	username := c.Param("username")
+
 	var updatedUser models.Auth
 	if err := c.ShouldBindJSON(&updatedUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
@@ -149,13 +157,15 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
+	sanitizedUsername := services.SanitizeUsername(username)
+
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}
 	defer mongoInstance.Disconnect()
 
-	result, err := mongoInstance.Update("users", bson.M{"username": username}, bson.M{"$set": updatedUser})
+	result, err := mongoInstance.Update("users", bson.M{"username": sanitizedUsername}, bson.M{"$set": updatedUser})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
 		return
@@ -176,13 +186,15 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
+	sanitizedUsername := services.SanitizeUsername(username)
+
 	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}
 	defer mongoInstance.Disconnect()
 
-	filter := bson.M{"username": username}
+	filter := bson.M{"username": sanitizedUsername}
 	result, err := mongoInstance.Delete("users", filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})

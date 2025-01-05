@@ -46,3 +46,20 @@ func IsValidUUID(uuidStr string) bool {
 	_, err := uuid.Parse(uuidStr)
 	return err == nil
 }
+
+func SanitizeUsername(input string) string {
+	// Use regex to remove any special characters except alphanumeric and underscore
+	re := regexp.MustCompile(`[^a-zA-Z0-9_]`)
+	return re.ReplaceAllString(input, "")
+}
+
+func SanitizePassword(password string) string {
+	// Return the password as is, without any modifications
+	return password
+}
+
+func SanitizeUUID(uuidStr string) string {
+	// Use regex to remove any special characters except alphanumeric and hyphen
+	re := regexp.MustCompile(`[^a-zA-Z0-9-]`)
+	return re.ReplaceAllString(uuidStr, "")
+}
