@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"context"
+	"crypto/rand"
+	"fmt"
 	"go-song-album/models"
 	"go-song-album/services"
-	"math/rand"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,22 +14,29 @@ import (
 
 // Generate random UUID
 func GenerateUUID() string {
-	return strconv.Itoa(rand.Int())
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		return ""
+	}
+	return fmt.Sprintf("%x", b)
 }
 
-func getMongoService(c *gin.Context) *services.MongoService {
+func getMongoService(c *gin.Context) (*services.MongoService, bool) {
 	mongoInstance, err := services.NewMongoService()
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to create mongo service"})
-		return nil
+		return nil, false
 	}
-	return mongoInstance
+	return mongoInstance, true
 }
 
-// GetAlbums handles GET requests to retrieve the list of albums.
+// GetAlbums - handles GET requests to retrieve the list of albums.
+// It responds with a JSON-encoded list of albums and an HTTP status code 200 (OK).
+// @param c *gin.Context - the context for the current request, provided by the Gin framework.
 func GetAlbums(c *gin.Context) {
-	mongoInstance := getMongoService(c)
-	if mongoInstance == nil {
+	mongoInstance, ok := getMongoService(c)
+	if !ok {
 		return
 	}
 	defer mongoInstance.Disconnect()
@@ -62,8 +69,8 @@ func PostAlbums(c *gin.Context) {
 		return
 	}
 
-	mongoInstance := getMongoService(c)
-	if mongoInstance == nil {
+	mongoInstance, ok := getMongoService(c)
+	if !ok {
 		return
 	}
 	defer mongoInstance.Disconnect()
@@ -81,8 +88,8 @@ func PostAlbums(c *gin.Context) {
 func GetAlbumByID(c *gin.Context) {
 	id := c.Param("id")
 
-	mongoInstance := getMongoService(c)
-	if mongoInstance == nil {
+	mongoInstance, ok := getMongoService(c)
+	if !ok {
 		return
 	}
 	defer mongoInstance.Disconnect()
@@ -97,7 +104,7 @@ func GetAlbumByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, album)
 }
 
-// UpdateAlbum - updates an existing album with the provided ID.
+// UpdateAlbum updates an existing album with the provided ID.
 func UpdateAlbum(c *gin.Context) {
 	id := c.Param("id")
 	var updatedAlbum models.Album
@@ -106,8 +113,8 @@ func UpdateAlbum(c *gin.Context) {
 		return
 	}
 
-	mongoInstance := getMongoService(c)
-	if mongoInstance == nil {
+	mongoInstance, ok := getMongoService(c)
+	if !ok {
 		return
 	}
 	defer mongoInstance.Disconnect()
@@ -129,12 +136,12 @@ func UpdateAlbum(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, updatedAlbum)
 }
 
-// DeleteAlbum - marks an album as deleted with the provided ID.
+// DeleteAlbum marks an album as deleted with the provided ID.
 func DeleteAlbum(c *gin.Context) {
 	id := c.Param("id")
 
-	mongoInstance := getMongoService(c)
-	if mongoInstance == nil {
+	mongoInstance, ok := getMongoService(c)
+	if !ok {
 		return
 	}
 	defer mongoInstance.Disconnect()

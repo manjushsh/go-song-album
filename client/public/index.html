@@ -21,14 +21,32 @@
             <h2>Login</h2>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username">
+                <input type="text" id="username" name="username">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password">
+                <input type="password" id="password" name="password">
             </div>
             <div role="button" class="form-group">
                 <button onclick="login()">Login</button>
+            </div>
+        </div>
+        <div class="main" id="register-form">
+            <h2>Register</h2>
+            <div class="form-group">
+                <label for="register-username">Username</label>
+                <input type="text" id="register-username" name="register-username">
+            </div>
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password" name="register-password">
+            </div>
+            <div class="form-group">
+                <label for="register-confirm-password">Confirm Password</label>
+                <input type="password" id="register-confirm-password" name="register-confirm-password">
+            </div>
+            <div class="form-group">
+                <button onclick="register()">Register</button>
             </div>
         </div>
         <div class="main" id="album-manager" style="display: none;">
@@ -37,19 +55,19 @@
             <h2>Add/Edit Album</h2>
             <div class="form-group">
                 <label for="title">Title</label>
-                <input type="text" id="title">
+                <input type="text" id="title" name="title">
             </div>
             <div class="form-group">
                 <label for="artist">Artist</label>
-                <input type="text" id="artist">
+                <input type="text" id="artist" name="artist">
             </div>
             <div class="form-group">
                 <label for="price">Price</label>
-                <input type="text" id="price">
+                <input type="text" id="price" name="price">
             </div>
             <div class="form-group">
                 <label for="imageUrl">Image URL</label>
-                <input type="text" id="imageUrl">
+                <input type="text" id="imageUrl" name="imageUrl">
             </div>
             <span id="albumId" style="display: none;"></span>
             <div class="form-group">
