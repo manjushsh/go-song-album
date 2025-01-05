@@ -67,6 +67,11 @@ func (s *MongoService) FindOne(collection string, filter interface{}) *mongo.Sin
 	ctx, cancel := context.WithTimeout(context.Background(), operationTimeout)
 	defer cancel()
 
+	// Ensure filter is properly sanitized
+	if filter == nil {
+		return nil
+	}
+
 	return s.db.Collection(collection).FindOne(ctx, filter)
 }
 
@@ -74,12 +79,22 @@ func (s *MongoService) FindAll(collection string, filter interface{}) (*mongo.Cu
 	ctx, cancel := context.WithTimeout(context.Background(), findAllTimeout)
 	defer cancel()
 
+	// Ensure filter is properly sanitized
+	if filter == nil {
+		return nil, fmt.Errorf("filter cannot be nil")
+	}
+
 	return s.db.Collection(collection).Find(ctx, filter)
 }
 
 func (s *MongoService) Update(collection string, filter, update interface{}) (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), operationTimeout)
 	defer cancel()
+
+	// Ensure filter is properly sanitized
+	if filter == nil {
+		return nil, fmt.Errorf("filter cannot be nil")
+	}
 
 	return s.db.Collection(collection).UpdateOne(ctx, filter, update)
 }
