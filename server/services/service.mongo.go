@@ -116,7 +116,7 @@ func (s *MongoService) Disconnect() error {
 func ConnectToMongo(c *gin.Context) (*MongoService, bool) {
 	mongoInstance, err := NewMongoService()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to database"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to connect to database. Error: %v", err)})
 		return nil, false
 	}
 	return mongoInstance, true
