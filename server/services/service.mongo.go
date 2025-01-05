@@ -3,18 +3,20 @@ package services
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
-	dbName          = "go_projects"
-	connectTimeout  = 10 * time.Second
+	dbName           = "go_projects"
+	connectTimeout   = 10 * time.Second
 	operationTimeout = 5 * time.Second
-	findAllTimeout  = 30 * time.Second
+	findAllTimeout   = 30 * time.Second
 )
 
 type MongoService struct {
@@ -29,16 +31,16 @@ func NewMongoService() (*MongoService, error) {
 	}
 
 	clientOpts := options.Client().ApplyURI(uri)
-	client, err := mongo.Connect(context.TODO(), clientOpts)
-	if err != nil {
-		return nil, err
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), connectTimeout)
 	defer cancel()
 
+	client, err := mongo.Connect(ctx, clientOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)
+	}
+
 	if err = client.Ping(ctx, nil); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to ping MongoDB: %w", err)
 	}
 
 	return &MongoService{
@@ -94,4 +96,17 @@ func (s *MongoService) Disconnect() error {
 	defer cancel()
 
 	return s.client.Disconnect(ctx)
+}
+
+func ConnectToMongo(c *gin.Context) (*MongoService, bool) {
+	mongoInstance, err := NewMongoService()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to database"})
+		return nil, false
+	}
+	return mongoInstance, true
+}
+
+func HandleError(c *gin.Context, err error, statusCode int16, errMessage string) {
+	c.JSON(int(statusCode), gin.H{"error": errMessage})
 }

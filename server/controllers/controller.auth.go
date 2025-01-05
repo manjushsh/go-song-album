@@ -10,23 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func connectToMongo(c *gin.Context) (*services.MongoService, bool) {
-	mongoInstance, err := services.NewMongoService()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to database"})
-		return nil, false
-	}
-	return mongoInstance, true
-}
-
-func handleMongoError(c *gin.Context, err error, notFoundMessage string) {
-	if err == mongo.ErrNoDocuments {
-		c.JSON(http.StatusNotFound, gin.H{"error": notFoundMessage})
-	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-	}
-}
-
 func Login(c *gin.Context) {
 	var loginRequest models.Auth
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
@@ -34,7 +17,12 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	mongoInstance, ok := connectToMongo(c)
+	if !services.IsValidUsername(loginRequest.Username) || !services.IsValidPassword(loginRequest.Password) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}
@@ -43,7 +31,7 @@ func Login(c *gin.Context) {
 	var foundUser models.Auth
 	err := mongoInstance.FindOne("users", bson.M{"username": loginRequest.Username, "isdeleted": false}).Decode(&foundUser)
 	if err != nil {
-		handleMongoError(c, err, "Invalid credentials")
+		services.HandleError(c, err, http.StatusInternalServerError, "Invalid credentials - No User Found")
 		return
 	}
 
@@ -68,7 +56,12 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	mongoInstance, ok := connectToMongo(c)
+	if !services.IsValidUsername(registerRequest.Username) || !services.IsValidPassword(registerRequest.Password) {
+		services.HandleError(c, nil, http.StatusBadRequest, "Invalid credentials")
+		return
+	}
+
+	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}
@@ -95,7 +88,7 @@ func Register(c *gin.Context) {
 
 	_, err = mongoInstance.Insert("users", registerRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
+		services.HandleError(c, err, http.StatusInternalServerError, "Failed to register user")
 		return
 	}
 
@@ -103,7 +96,7 @@ func Register(c *gin.Context) {
 }
 
 func GetUsers(c *gin.Context) {
-	mongoInstance, ok := connectToMongo(c)
+	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}
@@ -112,7 +105,7 @@ func GetUsers(c *gin.Context) {
 	var users []models.Auth
 	cursor, err := mongoInstance.FindAll("users", bson.M{})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve users"})
+		services.HandleError(c, err, http.StatusInternalServerError, "Failed to retrieve users")
 		return
 	}
 	if err = cursor.All(c, &users); err != nil {
@@ -126,7 +119,7 @@ func GetUsers(c *gin.Context) {
 func GetUser(c *gin.Context) {
 	username := c.Param("username")
 
-	mongoInstance, ok := connectToMongo(c)
+	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}
@@ -135,7 +128,7 @@ func GetUser(c *gin.Context) {
 	var user models.Auth
 	err := mongoInstance.FindOne("users", bson.M{"username": username}).Decode(&user)
 	if err != nil {
-		handleMongoError(c, err, "User not found")
+		services.HandleError(c, err, http.StatusNotFound, "User not found")
 		return
 	}
 
@@ -150,7 +143,12 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	mongoInstance, ok := connectToMongo(c)
+	if !services.IsValidUsername(updatedUser.Username) || !services.IsValidPassword(updatedUser.Password) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}
@@ -172,7 +170,12 @@ func UpdateUser(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	username := c.Param("username")
 
-	mongoInstance, ok := connectToMongo(c)
+	if !services.IsValidUsername(username) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid username"})
+		return
+	}
+
+	mongoInstance, ok := services.ConnectToMongo(c)
 	if !ok {
 		return
 	}

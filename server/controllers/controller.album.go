@@ -2,24 +2,18 @@ package controllers
 
 import (
 	"context"
-	"crypto/rand"
-	"fmt"
 	"go-song-album/models"
 	"go-song-album/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Generate random UUID
 func GenerateUUID() string {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		return ""
-	}
-	return fmt.Sprintf("%x", b)
+	return uuid.New().String()
 }
 
 func getMongoService(c *gin.Context) (*services.MongoService, bool) {
@@ -87,6 +81,11 @@ func PostAlbums(c *gin.Context) {
 // GetAlbumByID locates the album whose ID value matches the id parameter sent by the client.
 func GetAlbumByID(c *gin.Context) {
 	id := c.Param("id")
+	// check if ID is valid. saftey check.
+	if !services.IsValidUUID(id) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
+		return
+	}
 
 	mongoInstance, ok := getMongoService(c)
 	if !ok {
@@ -107,6 +106,12 @@ func GetAlbumByID(c *gin.Context) {
 // UpdateAlbum updates an existing album with the provided ID.
 func UpdateAlbum(c *gin.Context) {
 	id := c.Param("id")
+	// check if ID is valid. saftey check.
+	if !services.IsValidUUID(id) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
+		return
+	}
+
 	var updatedAlbum models.Album
 	if err := c.BindJSON(&updatedAlbum); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid request"})
@@ -139,6 +144,11 @@ func UpdateAlbum(c *gin.Context) {
 // DeleteAlbum marks an album as deleted with the provided ID.
 func DeleteAlbum(c *gin.Context) {
 	id := c.Param("id")
+	// check if ID is valid. saftey check.
+	if !services.IsValidUUID(id) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid album ID"})
+		return
+	}
 
 	mongoInstance, ok := getMongoService(c)
 	if !ok {
