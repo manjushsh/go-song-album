@@ -6,14 +6,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const { username, password } = getFormData('username', 'password');
+    if (!username || !password) return alert('Please enter a username and password');
 
     try {
         const data = await fetchData(`${apiUrl}/auth/login`, 'POST', { username, password });
         authToken = data.token;
         localStorage.setItem('authToken', authToken);
         fetchAlbums();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+async function register() {
+    const { 'register-username': username, 'register-password': password, 'register-confirm-password': rpassword } = getFormData('register-username', 'register-password', 'register-confirm-password');
+    if (!username || !password || !rpassword) return alert('Please enter a username and password');
+
+    try {
+        await fetchData(`${apiUrl}/auth/register`, 'POST', { username, password });
+        alert('User registered successfully');
     } catch (error) {
         alert(error.message);
     }
@@ -40,7 +52,7 @@ function renderAlbums(albums) {
             </div>
             <div class="album-actions">
                 <button data-id="${album.id}" onclick="editAlbum(this)">Edit</button>
-                <button onclick="deleteAlbum(${album.id})">Delete</button>
+                <button data-id="${album.id}" onclick="deleteAlbum(this)">Delete</button>
             </div>
         </div>
     `).join('');
@@ -52,7 +64,8 @@ async function addAlbum() {
 
     try {
         await fetchData(`${apiUrl}/albums`, 'POST', album);
-        fetchAlbums().then(() => setAlbumFormData({ title: '', artist: '', price: null, image: '' }));
+        await fetchAlbums();
+        setAlbumFormData({ title: '', artist: '', price: null, image: '' });
     } catch (error) {
         alert(error.message);
     }
@@ -64,13 +77,15 @@ async function updateAlbum() {
 
     try {
         await fetchData(`${apiUrl}/albums/${id}`, 'PUT', album);
-        fetchAlbums().then(() => setAlbumFormData({ title: '', artist: '', price: null, image: '' }));
+        await fetchAlbums();
+        setAlbumFormData({ title: '', artist: '', price: null, image: '' });
     } catch (error) {
         alert(error.message);
     }
 }
 
-async function deleteAlbum(id) {
+async function deleteAlbum(button) {
+    const id = button.getAttribute('data-id');
     try {
         await fetchData(`${apiUrl}/albums/${id}`, 'DELETE');
         fetchAlbums();
@@ -80,12 +95,7 @@ async function deleteAlbum(id) {
 }
 
 async function resetAlbums() {
-    try {
-        await fetchData(`${apiUrl}/albums/reset`, 'POST');
-        fetchAlbums();
-    } catch (error) {
-        alert(error.message);
-    }
+    window.location.reload();
 }
 
 async function editAlbum(button) {
@@ -105,13 +115,15 @@ function logout() {
 
 function handleUnauthorized() {
     toggleView('login-form');
+    toggleView('register-form');
     localStorage.removeItem('authToken');
     window.location.reload();
 }
 
 function toggleView(viewId) {
-    document.getElementById('login-form').style.display = viewId === 'login-form' ? 'block' : 'none';
-    document.getElementById('album-manager').style.display = viewId === 'album-manager' ? 'block' : 'none';
+    ['login-form', 'register-form', 'album-manager'].forEach(id => {
+        document.getElementById(id).style.display = id === viewId ? 'block' : 'none';
+    });
 }
 
 function getAuthHeaders() {
@@ -137,6 +149,13 @@ function setAlbumFormData(album) {
     document.getElementById('artist').value = album.artist;
     document.getElementById('price').value = album.price;
     document.getElementById('imageUrl').value = album.image;
+}
+
+function getFormData(...ids) {
+    return ids.reduce((data, id) => {
+        data[id] = document.getElementById(id).value;
+        return data;
+    }, {});
 }
 
 async function fetchData(url, method = 'GET', body = null) {
