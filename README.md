@@ -1,16 +1,24 @@
-# Go Song Album CRUD API
+# Go Album CRUD API
 
-This project is a simple CRUD (Create, Read, Update, Delete) API for managing song albums, built using the Go programming language and the Gin web framework.
+This project is a simple CRUD (Create, Read, Update, Delete) API for managing albums, built using the Go programming language and the Gin web framework.
 
 [Tutorial from Go](https://go.dev/doc/tutorial/web-service-gin)
 
-## Features
+## TODO:
+- [x] Implement CRUD API and connect to UI
+- [x] Implement JWT Auth and middleware for protected routes
+- [x] Setup CORS middleware
+- [x] Implement UI and serve via Go Gin
+- [x] Connect to DB
+- [ ] Dockerize the app
+- [ ] And more
 
-- Create a new song album
-- Retrieve a list of all song albums
-- Retrieve a specific song album by ID
-- Update an existing song album
-- Delete a song album
+## Features
+- Create a new album
+- Retrieve a list of all albums
+- Retrieve a specific album by ID
+- Update an existing album
+- Delete a album
 
 ## Prerequisites
 
